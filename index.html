@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Благотворительный фонд — Помощь</title>
+    <style>
+        /* Минималистичные стили для функциональности */
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .widget-container {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 35px rgba(0, 10, 30, 0.1);
+            padding: 30px 25px;
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1e293b;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: 0.2s;
+            background: #f8fafc;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #4f8ef0;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(79, 142, 240, 0.15);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            padding: 12px 16px;
+            border-radius: 14px;
+            margin: 20px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            accent-color: #2563eb;
+            padding: 0;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            font-weight: 500;
+            color: #0f172a;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .pay-button {
+            width: 100%;
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 17px;
+            cursor: pointer;
+            transition: 0.2s;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.3);
+        }
+
+        .pay-button:hover {
+            background: #1e293b;
+            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .pay-button:disabled {
+            opacity: 0.6;
+            pointer-events: none;
+            filter: grayscale(0.2);
+        }
+
+        .note {
+            font-size: 13px;
+            color: #475569;
+            text-align: center;
+            margin-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 18px;
+        }
+
+        h2 {
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 24px;
+            font-size: 24px;
+        }
+
+        .required-star {
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <div class="widget-container">
+        <h2>Поддержать фонд</h2>
+        
+        <form id="donation-form" onsubmit="return false;">
+            <!-- Поля данных плательщика (обязательные согласно заданию) -->
+            <div class="form-group">
+                <label><span class="required-star">*</span> Email</label>
+                <input type="email" id="email" placeholder="example@mail.ru" required autocomplete="email">
+            </div>
+
+            <div class="form-group">
+                <label><span class="required-star">*</span> Номер телефона</label>
+                <input type="tel" id="phone" placeholder="+7 900 123-45-67" required autocomplete="tel-national">
+            </div>
+
+            <div class="form-group">
+                <label><span class="required-star">*</span> ФИО</label>
+                <input type="text" id="fullName" placeholder="Иванов Иван Иванович" required autocomplete="name">
+            </div>
+
+            <div class="form-group">
+                <label>Комментарий</label>
+                <textarea id="comment" placeholder="Необязательно"></textarea>
+            </div>
+
+            <!-- Чекбокс для ежемесячной подписки -->
+            <div class="checkbox-group">
+                <input type="checkbox" id="makeRecurrent">
+                <label for="makeRecurrent">Сделать платёж ежемесячным</label>
+            </div>
+
+            <!-- Кнопка вызова виджета -->
+            <button type="button" id="payButton" class="pay-button">Перейти к оплате</button>
+            
+            <div class="note">
+                Безопасный платёж через CloudPayments<br>
+                Данные будут переданы в фонд
+            </div>
+        </form>
+    </div>
+
+    <!-- Подключение скрипта виджета CloudPayments согласно документации -->
+    <script src="https://widget.cloudpayments.ru/bundles/cloudpayments.js"></script>
+    
+    <script>
+        (function() {
+            // --- Конфигурация ---
+            const publicId = 'pk_8f2b672d45ba2887ad7471e4c5a7f'; // предоставленный publicId
+            
+            // --- Элементы формы ---
+            const payButton = document.getElementById('payButton');
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+            const fullNameInput = document.getElementById('fullName');
+            const commentInput = document.getElementById('comment');
+            const recurrentCheckbox = document.getElementById('makeRecurrent');
+            
+            // Проверка загрузки библиотеки CloudPayments
+            if (typeof cp === 'undefined' || !cp.CloudPayments) {
+                payButton.disabled = true;
+                payButton.textContent = 'Виджет загружается...';
+                console.error('CloudPayments library not loaded.');
+                return;
+            }
+
+            // Создание экземпляра виджета (без автоинициализации на кнопке)
+            const widget = new cp.CloudPayments({
+                language: 'ru-RU'
+            });
+
+            // --- Валидация перед открытием виджета ---
+            function validateForm() {
+                const email = emailInput.value.trim();
+                const phone = phoneInput.value.trim();
+                const fullName = fullNameInput.value.trim();
+                
+                if (!fullName) {
+                    alert('Пожалуйста, укажите ФИО.');
+                    fullNameInput.focus();
+                    return false;
+                }
+                
+                if (!email || !email.includes('@') || !email.includes('.')) {
+                    alert('Введите корректный Email.');
+                    emailInput.focus();
+                    return false;
+                }
+                
+                // Простейшая проверка номера (не менее 10 цифр)
+                const digits = phone.replace(/\D/g, '');
+                if (digits.length < 10) {
+                    alert('Введите корректный номер телефона (минимум 10 цифр).');
+                    phoneInput.focus();
+                    return false;
+                }
+                
+                return true;
+            }
+
+            // --- Сбор данных для CloudPayments ---
+            function buildPaymentData() {
+                const email = emailInput.value.trim();
+                const phone = phoneInput.value.trim();
+                const fullName = fullNameInput.value.trim();
+                const comment = commentInput.value.trim();
+                const isRecurrent = recurrentCheckbox.checked;
+                
+                // Базовая сумма для примера (в рублях): 100.00
+                const amount = 100.00;
+                const currency = 'RUB';
+                // Уникальный идентификатор заказа для избежания дублирования
+                const invoiceId = 'donation_' + Date.now();
+                
+                // Формируем описание платежа
+                const description = 'Благотворительное пожертвование';
+
+                // Данные, которые попадут в выгрузку CloudPayments (через CloudPayments.params)
+                // В отчётах они будут видны в полях Email, Phone, AccountId, Name и т.д.
+                const paymentData = {
+                    publicId: publicId,
+                    description: description,
+                    amount: amount,
+                    currency: currency,
+                    invoiceId: invoiceId,
+                    // Встроенные поля CloudPayments для привязки к плательщику:
+                    email: email,     
+                    phone: phone,
+                    accountId: email, // часто используется как идентификатор пользователя
+                    
+                    // Дополнительные данные (JSON) – ФИО и комментарий передаются через data
+                    data: {
+                        fullName: fullName,
+                        comment: comment,
+                        phone: phone,
+                        email: email,
+                        // можно продублировать для удобства
+                        cloudPayments: {
+                            // рекуррентные настройки будут переданы отдельно
+                        }
+                    },
+                    
+                    // Настройки дизайна виджета (опционально)
+                    configuration: {
+                        requireEmail: false,
+                        requirePhone: false,
+                        requireName: false,
+                        // email и телефон уже заполнены из формы
+                    }
+                };
+
+                // Если чекбокс активен — настраиваем рекуррентный платёж (подписка)
+                if (isRecurrent) {
+                    // Согласно документации CloudPayments:
+                    // CloudPayments.recurrent = { interval: 'Month', period: 1 }
+                    // period: 1, interval: 'Month' — списание раз в месяц.
+                    paymentData.recurrent = {
+                        interval: 'Month',
+                        period: 1,
+                        // Можно добавить дату начала, если требуется, но по умолчанию после успешного платежа.
+                        // Для регулярных пожертвований также можно передать description подписки.
+                    };
+                    
+                    // Дополнительно можно указать customerReceipt для чеков, если нужно
+                }
+
+                return paymentData;
+            }
+
+            // --- Обработка событий оплаты ---
+            function handlePaymentSuccess(result) {
+                // result содержит информацию о транзакции
+                console.log('Платёж успешен:', result);
+                alert('Спасибо за ваше пожертвование! Средства будут направлены на благотворительность.');
+                
+                // Можно очистить форму или показать сообщение
+                // Если была создана подписка, она появится в ЛК Cloudpayments.
+            }
+
+            function handlePaymentFail(reason) {
+                // reason — объект с ошибкой или строка
+                console.error('Ошибка платежа:', reason);
+                alert('Платёж не прошёл. Пожалуйста, попробуйте снова или свяжитесь с поддержкой.');
+            }
+
+            // --- Запуск виджета по кнопке ---
+            payButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                if (!validateForm()) {
+                    return;
+                }
+                
+                const paymentParams = buildPaymentData();
+                
+                // Блокируем кнопку на время работы виджета
+                payButton.disabled = true;
+                payButton.textContent = 'Виджет открыт...';
+                
+                // Вызов метода открытия виджета (pay — для оплаты, для подписки используется auth или charge)
+                // Метод 'charge' списывает сразу, 'auth' — двухстадийный. Используем charge для простоты.
+                widget.pay(paymentParams, {
+                    onSuccess: function(result) {
+                        payButton.disabled = false;
+                        payButton.textContent = 'Перейти к оплате';
+                        handlePaymentSuccess(result);
+                    },
+                    onFail: function(reason) {
+                        payButton.disabled = false;
+                        payButton.textContent = 'Перейти к оплате';
+                        handlePaymentFail(reason);
+                    },
+                    onClose: function() {
+                        // Виджет закрыт без завершения оплаты
+                        payButton.disabled = false;
+                        payButton.textContent = 'Перейти к оплате';
+                        console.log('Виджет закрыт пользователем');
+                    }
+                });
+            });
+
+            // Маска телефона (элементарная) — для удобства
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[^\d+]/g, '');
+                if (!value.startsWith('+')) {
+                    if (value.startsWith('8') || value.startsWith('7')) {
+                        value = '+' + value;
+                    } else if (value.length > 0) {
+                        value = '+7' + value;
+                    }
+                }
+                e.target.value = value;
+            });
+
+        })();
+    </script>
+</body>
+</html>

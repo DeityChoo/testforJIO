@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Благотворительный фонд</title>
-    <script src="https://widget.cloudpayments.ru/bundles/cloudpayments.js"></script>
     <style>
         * {
             margin: 0;
@@ -40,9 +39,6 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
-        }
-
-        .heart-icon span {
             font-size: 28px;
             color: white;
         }
@@ -80,7 +76,6 @@
             font-weight: 600;
             color: #334155;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
         .amount-btn:hover {
@@ -160,20 +155,11 @@
             border: 2px solid #e2e8f0;
         }
 
-        .recurrent-block:hover {
-            border-color: #cbd5e1;
-        }
-
         .recurrent-block input[type="checkbox"] {
             width: 22px;
             height: 22px;
             accent-color: #f43f5e;
             cursor: pointer;
-        }
-
-        .recurrent-block .recurrent-text {
-            font-size: 14px;
-            color: #334155;
         }
 
         .recurrent-block .recurrent-text strong {
@@ -183,6 +169,7 @@
         .recurrent-block .recurrent-text small {
             color: #64748b;
             display: block;
+            font-size: 12px;
         }
 
         .donate-btn {
@@ -195,7 +182,6 @@
             font-size: 18px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
             margin-top: 6px;
         }
 
@@ -204,10 +190,7 @@
         }
 
         .secure-note {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            text-align: center;
             margin-top: 20px;
             color: #94a3b8;
             font-size: 12px;
@@ -221,19 +204,13 @@
             h1 {
                 font-size: 22px;
             }
-            .amount-btn {
-                padding: 10px 6px;
-                font-size: 13px;
-            }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="heart-icon">
-            <span>&#10084;</span>
-        </div>
+        <div class="heart-icon">&#10084;</div>
 
         <h1>Помогите детям</h1>
         <p class="subtitle">Ваше пожертвование поможет обеспечить лечение и заботу детям</p>
@@ -281,44 +258,30 @@
         </div>
     </div>
 
+    <script src="https://widget.cloudpayments.ru/bundles/cloudpayments.js"></script>
+
     <script>
-        var widget = new cp.CloudPayments();
-
-        var amountButtons = document.querySelectorAll('.amount-btn');
-        var customAmountInput = document.querySelector('.custom-amount');
-        var selectedAmount = 500;
-
-        amountButtons.forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                amountButtons.forEach(function(b) { b.classList.remove('active'); });
-                customAmountInput.classList.remove('active');
-                customAmountInput.value = '';
-                btn.classList.add('active');
-                selectedAmount = parseInt(btn.getAttribute('data-amount'));
-            });
-        });
-
-        customAmountInput.addEventListener('focus', function() {
-            amountButtons.forEach(function(b) { b.classList.remove('active'); });
-            customAmountInput.classList.add('active');
-            selectedAmount = parseInt(customAmountInput.value) || 0;
-        });
-
-        customAmountInput.addEventListener('input', function() {
-            var val = parseInt(customAmountInput.value);
-            if (!isNaN(val) && val > 0) {
-                selectedAmount = val;
-                amountButtons.forEach(function(b) { b.classList.remove('active'); });
-                customAmountInput.classList.add('active');
-            }
-        });
-
         document.querySelector('#checkout').onclick = function() {
+            var amountButtons = document.querySelectorAll('.amount-btn');
+            var customAmountInput = document.querySelector('.custom-amount');
+            var selectedAmount = 500;
+
+            // Определяем выбранную сумму
+            var activeBtn = document.querySelector('.amount-btn.active');
+            if (activeBtn) {
+                selectedAmount = parseInt(activeBtn.getAttribute('data-amount'));
+            }
+            if (customAmountInput.value && parseInt(customAmountInput.value) > 0) {
+                selectedAmount = parseInt(customAmountInput.value);
+            }
+
             if (selectedAmount <= 0) {
                 alert('Выберите сумму пожертвования.');
                 return;
             }
 
+            var widget = new cp.CloudPayments();
+            
             widget.start({
                 publicId: 'pk_8f2b672d45ba2887ad7471e4c5a7f',
                 description: 'Благотворительное пожертвование',
@@ -337,6 +300,17 @@
                 }
             });
         };
+
+        // Обработчики для кнопок суммы
+        document.querySelectorAll('.amount-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.amount-btn').forEach(function(b) {
+                    b.classList.remove('active');
+                });
+                document.querySelector('.custom-amount').value = '';
+                btn.classList.add('active');
+            });
+        });
     </script>
 
 </body>

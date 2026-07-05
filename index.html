@@ -1,81 +1,143 @@
-<!DOCTYPE html>
-<html lang="ru">
+HTML-файл (index.html):
+<!doctype html>
+<html lang=“ru”>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Благотворительный фонд</title>
-    <script src="https://widget.cloudpayments.ru/bundles/cloudpayments.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 20px;
-        }
-        label {
-            display: block;
-            margin: 10px 0 5px;
-        }
-        input, textarea {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-        }
-        button {
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-    </style>
+<meta charset=“utf-8”>
+<meta name=“viewport” content=“width=device-width,initial-scale=1”>
+<title>Пожертвование — пример CloudPayments</title>
+
+<!-- Скрипт виджета (обязательно: загружать с https://widget.cloudpayments.ru). -->
+<script src=“https://widget.cloudpayments.ru/bundles/cloudpayments.js”></script>
+<style>
+/* Минимальная стилизация для формы */
+body { font-family: Arial, sans-serif; padding: 20px; max-width: 720px; margin: 0 auto; }
+label { display:block; margin-top:12px; }
+input[type=“text”], input[type=“email”], input[type=“tel”], textarea, input[type=“number”] {
+width:100%; padding:8px; box-sizing:border-box; margin-top:4px;
+}
+.row { display:flex; gap:12px; }
+.row > div { flex:1; }
+button { margin-top:12px; padding:10px 16px; }
+</style>
 </head>
 <body>
 
-    <h2>Благотворительное пожертвование</h2>
+<h1>Пожертвование в фонд</h1>
 
-    <label>Email</label>
-    <input type="email" id="email">
-
-    <label>Телефон</label>
-    <input type="tel" id="phone">
-
-    <label>ФИО</label>
-    <input type="text" id="name">
-
-    <label>Комментарий</label>
-    <textarea id="comment"></textarea>
-
+<!-- Форма сбора данных (обязательное требование) -->
+<form id=“donationForm” onsubmit=“return false;”>
+<label>
+ФИО
+<input id=“fullName” type=“text” placeholder=“Иванов Иван Иванович” required>
+</label>
+<div class="row">
+  <div>
     <label>
-        <input type="checkbox" id="recurrent">
-        Сделать платёж ежемесячным
+      Email
+      <input id="email" type="email" placeholder="name@example.com" required>
     </label>
+  </div>
+  <div>
+    <label>
+      Телефон
+      <input id="phone" type="tel" placeholder="+7 900 000-00-00" required>
+    </label>
+  </div>
+</div>
 
-    <br><br>
+<label>
+  Комментарий
+  <textarea id="comment" rows="3" placeholder="Комментарий (необязательно)"></textarea>
+</label>
 
-    <button id="checkout">Оплатить</button>
+<label>
+  Сумма (RUB)
+  <input id="amount" type="number" min="1" step="0.01" value="100" required>
+</label>
 
-    <script>
-        var widget = new cp.CloudPayments();
+<label>
+  <input id="monthly" type="checkbox"> Сделать платеж ежемесячным
+</label>
 
-        document.querySelector('#checkout').onclick = function() {
-            widget.start({
-                publicId: 'pk_8f2b672d45ba2887ad7471e4c5a7f',
-                description: 'Пожертвование',
-                amount: 100,
-                currency: 'RUB',
-                invoiceId: 'donation_' + Date.now(),
-                accountId: document.getElementById('email').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                data: {
-                    CloudPayments: {
-                        recurrent: document.getElementById('recurrent').checked 
-                            ? { interval: 'Month', period: 1 } 
-                            : null
-                    }
-                }
-            });
-        };
-    </script>
+<button id="payButton" type="button">Оплатить</button>
+</form>
 
+<script>
+// publicTerminalId / PublicId — ваш публичный идентификатор терминала (передан вами)
+const PUBLIC_TERMINAL_ID = ‘pk_8f2b672d45ba2887ad7471e4c5a7f’;
+document.getElementById('payButton').addEventListener('click', function () {
+  // собираем данные формы
+  const fullName = document.getElementById('fullName').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const comment = document.getElementById('comment').value.trim();
+  const amount = parseFloat(document.getElementById('amount').value);
+  const monthly = document.getElementById('monthly').checked;
+
+  if (!fullName || !email || !phone || !amount || amount <= 0) {
+    alert('Заполните, пожалуйста, все обязательные поля и укажите сумму > 0.');
+    return;
+  }
+
+  // разбиваем ФИО на firstName/lastName при возможности (опционально)
+  let firstName = '';
+  let lastName = '';
+  const parts = fullName.split(/\s+/);
+  if (parts.length === 1) {
+    firstName = parts[0];
+  } else if (parts.length === 2) {
+    firstName = parts[0]; lastName = parts[1];
+  } else if (parts.length >= 3) {
+    firstName = parts[0]; lastName = parts[1];
+  }
+
+  // формируем userInfo — данные плательщика (будут переданы в Pay-уведомлении и в выгрузку).
+  const userInfo = {
+    fullName: fullName,
+    firstName: firstName,
+    lastName: lastName,
+    phone: phone,
+    email: email,
+    // accountId обязателен для создания рекуррентной подписки — используем email как accountId.
+    accountId: email,
+    // добавим комментарий как customField (имя/значение)
+    customField: { name: 'comment', value: comment }
+  };
+
+  // Параметры рекуррентных платежей — если выбран чекбокс
+  let recurrent = undefined;
+  if (monthly) {
+    // интервал 'Month' и period 1 означает ежемесячно (пример из документации).
+    recurrent = { interval: 'Month', period: 1 };
+  }
+
+  // Создаем виджет и запускаем его (вызов полностью соответствует примерам документации).
+  const widget = new cp.CloudPayments();
+
+  const intentParams = {
+    publicTerminalId: PUBLIC_TERMINAL_ID,
+    description: 'Пожертвование в фонд',
+    amount: amount,
+    currency: 'RUB',
+    email: email,
+    userInfo: userInfo
+  };
+
+  if (recurrent) {
+    intentParams.recurrent = recurrent;
+  }
+
+  // Запуск виджета: промис-версия (как в документации).
+  widget.start(intentParams).then(function(widgetResult) {
+    // Успешная оплата (в widgetResult / Pay-уведомлении вы получите детальную информацию).
+    console.log('widgetResult:', widgetResult);
+    alert('Оплата прошла успешно. Спасибо за пожертвование!');
+    // После успешной оплаты: если был включён recurrent и передан accountId, в ЛК CloudPayments должна появиться подписка.
+  }).catch(function(error) {
+    console.error('widget error:', error);
+    alert('Оплата не прошла. Проверьте данные и повторите попытку.');
+  });
+});
+</script>
 </body>
 </html>

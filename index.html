@@ -27,36 +27,30 @@
         Сделать платёж ежемесячным
     </label><br><br>
 
-    <button id="payButton">Оплатить</button>
+    <button id="checkout">Оплатить</button>
 
     <script>
-        const widget = new cp.CloudPayments();
-
-        const launchWidget = () => {
-            const intentParams = {
+        function start() {
+            var widget = new cp.CloudPayments();
+            widget.start({
                 publicId: 'pk_8f2b672d45ba2887ad7471e4c5a7f',
                 description: 'Пожертвование',
                 amount: 100,
                 currency: 'RUB',
                 invoiceId: 'donation_' + Date.now(),
-                userInfo: {
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value,
-                    fullName: document.getElementById('name').value
-                },
-                recurrent: document.getElementById('recurrent').checked
-                    ? { interval: 'Month', period: 1 }
-                    : null
-            };
-
-            widget.start(intentParams).then(function(widgetResult) {
-                console.log('result', widgetResult);
-            }).catch(function(error) {
-                console.log('error', error);
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                data: {
+                    CloudPayments: {
+                        recurrent: document.getElementById('recurrent').checked 
+                            ? { interval: 'Month', period: 1 } 
+                            : null
+                    }
+                }
             });
-        };
+        }
 
-        document.getElementById('payButton').addEventListener('click', launchWidget);
+        document.querySelector('#checkout').onclick = start;
     </script>
 
 </body>

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Благотворительный фонд «Сердце»</title>
-    <script src="https://widget.cloudpayments.ru/bundles/cloudpayments.js"></script>
     <style>
         * {
             margin: 0;
@@ -289,13 +288,27 @@
             </span>
         </label>
 
-        <button class="donate-btn" id="checkout">Пожертвовать</button>
+        <button class="donate-btn" id="checkout" disabled>Загрузка...</button>
 
         <div class="footer-text">Безопасный платёж через CloudPayments</div>
     </div>
 
     <script>
-        var widget = new cp.CloudPayments();
+        // Ждём загрузки CloudPayments
+        var widget = null;
+        var checkoutBtn = document.getElementById('checkout');
+
+        function initWidget() {
+            if (typeof cp !== 'undefined' && cp.CloudPayments) {
+                widget = new cp.CloudPayments();
+                checkoutBtn.disabled = false;
+                checkoutBtn.textContent = 'Пожертвовать';
+            } else {
+                setTimeout(initWidget, 200);
+            }
+        }
+
+        initWidget();
 
         // Переключение суммы
         var amountBtns = document.querySelectorAll('.amount-btn');
@@ -314,7 +327,12 @@
         });
 
         // Оплата
-        document.querySelector('#checkout').onclick = function() {
+        checkoutBtn.onclick = function() {
+            if (!widget) {
+                alert('Виджет ещё загружается, подождите.');
+                return;
+            }
+
             var amount = 500;
             var activeBtn = document.querySelector('.amount-btn.active');
             if (activeBtn) {

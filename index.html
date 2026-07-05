@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Благотворительный фонд</title>
+    <script src="https://widget.cloudpayments.ru/bundles/cloudpayments.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -50,44 +51,30 @@
 
     <br><br>
 
-    <button onclick="pay()">Оплатить</button>
-
-    <script src="https://widget.cloudpayments.ru/bundles/cloudpayments.js"></script>
+    <button id="checkout">Оплатить</button>
 
     <script>
-        function pay() {
-            var widget = new cp.CloudPayments();
-            
-            var data = {};
-            data.CloudPayments = {
-                recurrent: document.getElementById('recurrent').checked 
-                    ? { interval: 'Month', period: 1 } 
-                    : null
-            };
+        var widget = new cp.CloudPayments();
 
-            widget.pay(
-                'charge',
-                {
-                    publicId: 'pk_8f2b672d45ba2887ad7471e4c5a7f',
-                    description: 'Пожертвование',
-                    amount: 100,
-                    currency: 'RUB',
-                    invoiceId: 'donation_' + Date.now(),
-                    accountId: document.getElementById('email').value,
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value,
-                    data: data
-                },
-                {
-                    onSuccess: function() {
-                        alert('Оплата прошла успешно');
-                    },
-                    onFail: function() {
-                        alert('Оплата не прошла');
+        document.querySelector('#checkout').onclick = function() {
+            widget.start({
+                publicId: 'pk_8f2b672d45ba2887ad7471e4c5a7f',
+                description: 'Пожертвование',
+                amount: 100,
+                currency: 'RUB',
+                invoiceId: 'donation_' + Date.now(),
+                accountId: document.getElementById('email').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                data: {
+                    CloudPayments: {
+                        recurrent: document.getElementById('recurrent').checked 
+                            ? { interval: 'Month', period: 1 } 
+                            : null
                     }
                 }
-            );
-        }
+            });
+        };
     </script>
 
 </body>

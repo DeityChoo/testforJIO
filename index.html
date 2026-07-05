@@ -3,64 +3,336 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Благотворительный фонд</title>
+    <title>Благотворительный фонд «Сердце»</title>
     <script src="https://widget.cloudpayments.ru/bundles/cloudpayments.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 20px;
-        }
-        label {
-            display: block;
-            margin: 10px 0 5px;
-        }
-        input, textarea {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
+        * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
-        button {
-            padding: 10px 20px;
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #fdf2f4 0%, #f0f4ff 50%, #f0fdf4 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            padding: 40px 32px;
+        }
+
+        .heart {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #f43f5e, #e11d48);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 30px;
+            color: white;
+            box-shadow: 0 8px 24px rgba(244, 63, 94, 0.25);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 800;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        .amount-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+
+        .amount-btn {
+            flex: 1;
+            min-width: 65px;
+            padding: 12px 6px;
+            border: 2px solid #e2e8f0;
+            background: #ffffff;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
             cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+        }
+
+        .amount-btn:hover {
+            border-color: #f43f5e;
+            background: #fff1f2;
+        }
+
+        .amount-btn.active {
+            border-color: #f43f5e;
+            background: #fff1f2;
+            color: #e11d48;
+        }
+
+        .amount-custom {
+            flex: 1.3;
+            min-width: 90px;
+            padding: 12px 10px;
+            border: 2px solid #e2e8f0;
+            background: #ffffff;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            text-align: center;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .amount-custom:focus {
+            border-color: #f43f5e;
+        }
+
+        .amount-custom::placeholder {
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #64748b;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            background: #f8fafc;
+            outline: none;
+            color: #1e293b;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #94a3b8;
+            background: #ffffff;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 14px;
+            margin: 24px 0;
+            cursor: pointer;
+            border: 2px solid #e2e8f0;
+            transition: 0.2s;
+        }
+
+        .checkbox-row:hover {
+            border-color: #cbd5e1;
+        }
+
+        .checkbox-row input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #f43f5e;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .checkbox-row .checkbox-text {
+            font-size: 14px;
+            color: #334155;
+            line-height: 1.4;
+        }
+
+        .checkbox-row .checkbox-text strong {
+            color: #e11d48;
+        }
+
+        .checkbox-row .checkbox-text span {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .donate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #f43f5e, #e11d48);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            letter-spacing: 0.3px;
+            box-shadow: 0 6px 20px rgba(244, 63, 94, 0.3);
+        }
+
+        .donate-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 28px rgba(244, 63, 94, 0.4);
+        }
+
+        .donate-btn:active {
+            transform: translateY(0);
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 20px;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 28px 20px;
+                border-radius: 22px;
+            }
+            h1 {
+                font-size: 21px;
+            }
+            .amount-btn {
+                font-size: 13px;
+                padding: 10px 4px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <h2>Благотворительное пожертвование</h2>
+    <div class="container">
+        <div class="heart">&#10084;&#65039;</div>
 
-    <label>Email</label>
-    <input type="email" id="email">
+        <h1>Помогите детям</h1>
+        <p class="subtitle">Ваше пожертвование поможет обеспечить лечение тем, кто в этом нуждается</p>
 
-    <label>Телефон</label>
-    <input type="tel" id="phone">
+        <div class="amount-row">
+            <button class="amount-btn" data-amount="100">100 ₽</button>
+            <button class="amount-btn" data-amount="300">300 ₽</button>
+            <button class="amount-btn active" data-amount="500">500 ₽</button>
+            <button class="amount-btn" data-amount="1000">1000 ₽</button>
+            <input type="number" class="amount-custom" placeholder="Своя сумма" min="1">
+        </div>
 
-    <label>ФИО</label>
-    <input type="text" id="name">
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="ivan@example.com">
+        </div>
 
-    <label>Комментарий</label>
-    <textarea id="comment"></textarea>
+        <div class="form-group">
+            <label>Телефон</label>
+            <input type="tel" id="phone" placeholder="+7 900 123-45-67">
+        </div>
 
-    <label>
-        <input type="checkbox" id="recurrent">
-        Сделать платёж ежемесячным
-    </label>
+        <div class="form-group">
+            <label>ФИО</label>
+            <input type="text" id="name" placeholder="Иванов Иван Иванович">
+        </div>
 
-    <br><br>
+        <div class="form-group">
+            <label>Комментарий</label>
+            <textarea id="comment" placeholder="По желанию укажите назначение платежа"></textarea>
+        </div>
 
-    <button id="checkout">Оплатить</button>
+        <label class="checkbox-row">
+            <input type="checkbox" id="recurrent">
+            <span class="checkbox-text">
+                Сделать платёж <strong>ежемесячным</strong>
+                <span>Средства будут списываться раз в месяц</span>
+            </span>
+        </label>
+
+        <button class="donate-btn" id="checkout">Пожертвовать</button>
+
+        <div class="footer-text">Безопасный платёж через CloudPayments</div>
+    </div>
 
     <script>
         var widget = new cp.CloudPayments();
 
+        // Переключение суммы
+        var amountBtns = document.querySelectorAll('.amount-btn');
+        var amountCustom = document.querySelector('.amount-custom');
+
+        amountBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                amountBtns.forEach(function(b) { b.classList.remove('active'); });
+                amountCustom.value = '';
+                btn.classList.add('active');
+            });
+        });
+
+        amountCustom.addEventListener('focus', function() {
+            amountBtns.forEach(function(b) { b.classList.remove('active'); });
+        });
+
+        // Оплата
         document.querySelector('#checkout').onclick = function() {
+            var amount = 500;
+            var activeBtn = document.querySelector('.amount-btn.active');
+            if (activeBtn) {
+                amount = parseInt(activeBtn.getAttribute('data-amount'));
+            }
+            if (amountCustom.value && parseInt(amountCustom.value) > 0) {
+                amount = parseInt(amountCustom.value);
+            }
+
+            if (amount <= 0) {
+                alert('Выберите сумму пожертвования.');
+                return;
+            }
+
             widget.start({
                 publicId: 'pk_8f2b672d45ba2887ad7471e4c5a7f',
                 description: 'Пожертвование',
-                amount: 100,
+                amount: amount,
                 currency: 'RUB',
                 invoiceId: 'donation_' + Date.now(),
                 accountId: document.getElementById('email').value,
@@ -68,8 +340,8 @@
                 phone: document.getElementById('phone').value,
                 data: {
                     CloudPayments: {
-                        recurrent: document.getElementById('recurrent').checked 
-                            ? { interval: 'Month', period: 1 } 
+                        recurrent: document.getElementById('recurrent').checked
+                            ? { interval: 'Month', period: 1 }
                             : null
                     }
                 }

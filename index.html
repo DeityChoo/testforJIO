@@ -4,15 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Благотворительный фонд — пожертвование</title>
-
-    <!-- 1. Подключение скрипта виджета (строго по документации) -->
     <script src="https://widget.cloudpayments.ru/bundles/cloudpayments.js"></script>
-
-    <!-- 2. Подключение jQuery для использования $('#checkout').click(start) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <style>
-        /* Минимальный дизайн (не влияет на функциональность) */
         * {
             margin: 0;
             padding: 0;
@@ -141,7 +136,6 @@
     <h1>❤️ Пожертвование</h1>
     <div class="sub">Все средства пойдут на помощь детям</div>
 
-    <!-- Форма сбора данных (email, телефон, ФИО, комментарий) -->
     <form id="donationForm">
         <div class="form-group">
             <label for="fullName">ФИО</label>
@@ -164,13 +158,11 @@
             <textarea id="comment" placeholder="Ваше пожелание..."></textarea>
         </div>
 
-        <!-- Чекбокс «сделать платеж ежемесячным» -->
         <div class="checkbox-group">
             <input type="checkbox" id="recurrentCheck">
             <label for="recurrentCheck">🔁 Сделать платеж ежемесячным</label>
         </div>
 
-        <!-- Кнопка оплаты с id="checkout" – именно на неё вешается $('#checkout').click(start) -->
         <button type="button" class="btn-pay" id="checkout">💳 Оплатить 500 ₽</button>
 
         <div class="footnote">Безопасный платёж через CloudPayments</div>
@@ -181,12 +173,9 @@
     $(function() {
         'use strict';
 
-        // ---------- экземпляр виджета (по документации) ----------
         var widget = new cp.CloudPayments();
 
-        // ---------- функция start (по документации) ----------
         function start() {
-            // 1. Валидация формы (все поля обязательны, кроме комментария)
             var fullName = $('#fullName').val().trim();
             var email    = $('#email').val().trim();
             var phone    = $('#phone').val().trim();
@@ -196,15 +185,12 @@
             if (!email)    { alert('Заполните E‑mail.'); $('#email').focus(); return; }
             if (!phone)    { alert('Заполните телефон.'); $('#phone').focus(); return; }
 
-            // 2. Формирование параметров (строго по документации)
             var intentParams = {
-                // Обязательные параметры (из документации)
                 publicTerminalId: 'pk_8f2b672d45ba2887ad7471e4c5a7f', // ваш publicId
                 amount: 500,                                          // сумма
                 currency: 'RUB',                                     // валюта
                 paymentSchema: 'Single',                             // схема (Single / Dual) – обязателен
 
-                // Необязательные, но используемые в примере
                 description: 'Пожертвование в фонд',
                 culture: 'ru-RU',
                 skin: 'modern',
@@ -221,7 +207,6 @@
                 }
             };
 
-            // 3. Если чекбокс активен – добавляем рекуррент (по документации)
             if ($('#recurrentCheck').is(':checked')) {
                 intentParams.recurrent = {
                     interval: 'Month',   // интервал – месяц
@@ -230,7 +215,6 @@
                 };
             }
 
-            // 4. Запуск виджета (метод start, возвращает Promise<WidgetResult>)
             widget.start(intentParams)
                 .then(function(widgetResult) {
                     console.log('Платёж успешен:', widgetResult);
@@ -238,15 +222,11 @@
                 })
                 .catch(function(error) {
                     console.warn('Платёж отменён или ошибка:', error);
-                    // Не выводим alert, чтобы не раздражать при отмене
                 });
         }
 
-        // ---------- назначение обработчика (строго по документации) ----------
-        // $('#checkout').click(start); – именно так, как в примере
         $('#checkout').click(start);
 
-        // Отключаем отправку формы по Enter
         $('#donationForm').on('keydown', function(e) {
             if (e.key === 'Enter') e.preventDefault();
         });

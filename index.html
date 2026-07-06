@@ -5,22 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Благотворительный фонд — пожертвование</title>
 
-    <!--
-        ============================================================
-        1.  ПОДКЛЮЧЕНИЕ СКРИПТА ВИДЖЕТА (по документации)
-            https://developers.cloudpayments.ru/#ustanovka-vidzheta
-        ============================================================
-    -->
+    <!-- Подключение скрипта виджета (строго по документации) -->
     <script src="https://widget.cloudpayments.ru/bundles/cloudpayments"></script>
 
     <style>
-        /* ------------------ минимальный дизайн ------------------ */
+        /* минимальный дизайн */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
             background: #f8fafc;
@@ -30,7 +24,6 @@
             justify-content: center;
             padding: 20px;
         }
-
         .card {
             max-width: 560px;
             width: 100%;
@@ -38,17 +31,13 @@
             border-radius: 28px;
             padding: 40px 36px;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
-            transition: 0.2s;
         }
-
         h1 {
             font-size: 26px;
             font-weight: 600;
-            letter-spacing: -0.01em;
             color: #0b1a33;
             margin-bottom: 6px;
         }
-
         .sub {
             color: #5b6f87;
             font-size: 15px;
@@ -59,11 +48,9 @@
             border-radius: 0 10px 10px 0;
             line-height: 1.4;
         }
-
         .form-group {
             margin-bottom: 18px;
         }
-
         .form-group label {
             display: block;
             font-size: 14px;
@@ -71,7 +58,6 @@
             color: #1e2a44;
             margin-bottom: 5px;
         }
-
         .form-group input,
         .form-group textarea {
             width: 100%;
@@ -83,7 +69,6 @@
             transition: 0.15s;
             font-family: inherit;
         }
-
         .form-group input:focus,
         .form-group textarea:focus {
             border-color: #2a7de1;
@@ -91,18 +76,15 @@
             background: #ffffff;
             box-shadow: 0 0 0 4px rgba(42, 125, 225, 0.08);
         }
-
         .form-group textarea {
             resize: vertical;
             min-height: 68px;
         }
-
         .row-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 14px;
         }
-
         .checkbox-group {
             display: flex;
             align-items: center;
@@ -112,7 +94,6 @@
             background: #f2f6fd;
             border-radius: 18px;
         }
-
         .checkbox-group input[type="checkbox"] {
             width: 20px;
             height: 20px;
@@ -120,7 +101,6 @@
             cursor: pointer;
             flex-shrink: 0;
         }
-
         .checkbox-group label {
             font-size: 15px;
             font-weight: 500;
@@ -128,7 +108,6 @@
             cursor: pointer;
             user-select: none;
         }
-
         .btn-pay {
             width: 100%;
             padding: 16px;
@@ -141,26 +120,20 @@
             cursor: pointer;
             transition: 0.15s;
             box-shadow: 0 6px 18px rgba(42, 125, 225, 0.25);
-            letter-spacing: 0.3px;
         }
-
         .btn-pay:hover {
             background: #1e66c2;
             transform: scale(1.01);
-            box-shadow: 0 10px 24px rgba(42, 125, 225, 0.35);
         }
-
         .btn-pay:active {
             transform: scale(0.97);
         }
-
         .footnote {
             margin-top: 18px;
             font-size: 13px;
             color: #7b8aa0;
             text-align: center;
         }
-
         @media (max-width: 480px) {
             .card {
                 padding: 28px 18px;
@@ -172,170 +145,129 @@
         }
     </style>
 </head>
-
 <body>
 
-    <div class="card">
+<div class="card">
+    <h1>❤️ Пожертвование</h1>
+    <div class="sub">Все средства пойдут на помощь детям</div>
 
-        <h1>❤️ Пожертвование</h1>
-        <div class="sub">Все средства пойдут на помощь детям</div>
+    <form id="donationForm" novalidate>
+        <div class="form-group">
+            <label for="fullName">ФИО</label>
+            <input type="text" id="fullName" placeholder="Иванов Иван Иванович" required />
+        </div>
 
-        <!-- ============================================================
-             2.  ФОРМА СБОРА ДАННЫХ (email, телефон, ФИО, комментарий)
-             ============================================================ -->
-        <form id="donationForm" novalidate>
-
+        <div class="row-2">
             <div class="form-group">
-                <label for="fullName">ФИО</label>
-                <input type="text" id="fullName" placeholder="Иванов Иван Иванович" required />
+                <label for="email">E‑mail</label>
+                <input type="email" id="email" placeholder="ivan@mail.ru" required />
             </div>
-
-            <div class="row-2">
-                <div class="form-group">
-                    <label for="email">E‑mail</label>
-                    <input type="email" id="email" placeholder="ivan@mail.ru" required />
-                </div>
-                <div class="form-group">
-                    <label for="phone">Телефон</label>
-                    <input type="tel" id="phone" placeholder="+7 999 123 45 67" required />
-                </div>
-            </div>
-
             <div class="form-group">
-                <label for="comment">Комментарий</label>
-                <textarea id="comment" placeholder="Ваше пожелание или примечание..."></textarea>
+                <label for="phone">Телефон</label>
+                <input type="tel" id="phone" placeholder="+7 999 123 45 67" required />
             </div>
+        </div>
 
-            <!-- ============================================================
-                 3.  ЧЕКБОКС «сделать платеж ежемесячным»
-                 ============================================================ -->
-            <div class="checkbox-group">
-                <input type="checkbox" id="recurrentCheck" />
-                <label for="recurrentCheck">🔁 Сделать платеж ежемесячным</label>
-            </div>
+        <div class="form-group">
+            <label for="comment">Комментарий</label>
+            <textarea id="comment" placeholder="Ваше пожелание или примечание..."></textarea>
+        </div>
 
-            <!-- ============================================================
-                 4.  КНОПКА ОПЛАТЫ → вызывает виджет
-                 ============================================================ -->
-            <button type="button" class="btn-pay" id="payButton">
-                💳 Оплатить 500 ₽
-            </button>
+        <div class="checkbox-group">
+            <input type="checkbox" id="recurrentCheck" />
+            <label for="recurrentCheck">🔁 Сделать платеж ежемесячным</label>
+        </div>
 
-            <div class="footnote">
-                Безопасный платёж через CloudPayments
-            </div>
+        <button type="button" class="btn-pay" id="payButton">
+            💳 Оплатить 500 ₽
+        </button>
 
-        </form>
+        <div class="footnote">Безопасный платёж через CloudPayments</div>
+    </form>
+</div>
 
-    </div>
+<script>
+    (function() {
+        'use strict';
 
-    <script>
-        (function() {
-            'use strict';
+        // ---- Ваш publicId (из задания) ----
+        const PUBLIC_ID = 'pk_8f2b672d45ba2887ad7471e4c5a7f';
 
-            // ---------- идентификатор терминала (из задания) ----------
-            const PUBLIC_TERMINAL_ID = 'pk_8f2b672d45ba2887ad7471e4c5a7f';
+        const SUCCESS_URL = window.location.href + '?payment=success';
+        const FAIL_URL    = window.location.href + '?payment=fail';
 
-            // ---------- ссылки для редиректа (можно заменить) ----------
-            const SUCCESS_URL = window.location.href + '?payment=success';
-            const FAIL_URL    = window.location.href + '?payment=fail';
+        const form = document.getElementById('donationForm');
+        const fullName = document.getElementById('fullName');
+        const email    = document.getElementById('email');
+        const phone    = document.getElementById('phone');
+        const comment  = document.getElementById('comment');
+        const recurrentCheck = document.getElementById('recurrentCheck');
+        const payBtn   = document.getElementById('payButton');
 
-            // ---------- DOM-элементы ----------
-            const form = document.getElementById('donationForm');
-            const fullName = document.getElementById('fullName');
-            const email    = document.getElementById('email');
-            const phone    = document.getElementById('phone');
-            const comment  = document.getElementById('comment');
-            const recurrentCheck = document.getElementById('recurrentCheck');
-            const payBtn   = document.getElementById('payButton');
+        // ---- Создаём экземпляр виджета ----
+        const widget = new cp.CloudPayments();
 
-            // ---------- экземпляр виджета (один раз) ----------
-            const widget = new cp.CloudPayments();
+        function launchWidget() {
+            // Валидация
+            const nameVal  = fullName.value.trim();
+            const emailVal = email.value.trim();
+            const phoneVal = phone.value.trim();
+            if (!nameVal)  { alert('Заполните ФИО.');  fullName.focus();  return; }
+            if (!emailVal) { alert('Заполните E‑mail.'); email.focus(); return; }
+            if (!phoneVal) { alert('Заполните телефон.'); phone.focus(); return; }
 
-            // ---------- функция запуска виджета ----------
-            function launchWidget() {
+            const AMOUNT = 500;
 
-                // ---- 1. Валидация формы (все поля обязательны, кроме комментария) ----
-                const nameVal  = fullName.value.trim();
-                const emailVal = email.value.trim();
-                const phoneVal = phone.value.trim();
-
-                if (!nameVal)  { alert('Заполните ФИО.');  fullName.focus();  return; }
-                if (!emailVal) { alert('Заполните E‑mail.'); email.focus(); return; }
-                if (!phoneVal) { alert('Заполните телефон.'); phone.focus(); return; }
-
-                // ---- 2. Сумма (фиксированная, по заданию) ----
-                const AMOUNT = 500;
-
-                // ---- 3. Базовые параметры виджета (строго по документации) ----
-                const intentParams = {
-                    publicTerminalId: PUBLIC_TERMINAL_ID,
-                    amount: AMOUNT,
-                    currency: 'RUB',
-                    description: 'Пожертвование в фонд',
-                    culture: 'ru-RU',
-                    skin: 'modern',
-                    // редиректы после оплаты
-                    successUrl: SUCCESS_URL,
-                    failUrl: FAIL_URL,
-                    // данные пользователя — все поля из формы
-                    userInfo: {
-                        fullName: nameVal,
-                        email: emailVal,
-                        phone: phoneVal,
-                        // комментарий передаём как customField
-                        customField: {
-                            name: 'comment',
-                            value: comment.value.trim() || ''
-                        }
-                    },
-                    // облако — обязательный параметр для работы виджета
-                    cloudPayments: {
-                        recurrent: {   // ← включаем поддержку рекуррентных платежей
-                            interval: 'Month',
-                            period: 1
-                        }
-                    }
-                };
-
-                // ---- 4. Если чекбокс активен — добавляем рекуррент (подписку) ----
-                if (recurrentCheck.checked) {
-                    // Параметр recurrent по документации:
-                    // https://developers.cloudpayments.ru/#rekurrentnye-platezhi
-                    intentParams.recurrent = {
-                        interval: 'Month',   // интервал — месяц
-                        period: 1,           // каждые 1 месяц
-                        amount: AMOUNT       // та же сумма
-                    };
+            // ---- Базовые параметры (строго по документации) ----
+            const params = {
+                publicId: PUBLIC_ID,        // ← ОБЯЗАТЕЛЬНО publicId, а не publicTerminalId
+                amount: AMOUNT,
+                currency: 'RUB',
+                description: 'Пожертвование в фонд',
+                culture: 'ru-RU',
+                skin: 'modern',
+                successUrl: SUCCESS_URL,
+                failUrl: FAIL_URL,
+                userInfo: {
+                    fullName: nameVal,
+                    email: emailVal,
+                    phone: phoneVal,
+                    // Дополнительные поля (комментарий) — через additionalFields
+                    additionalFields: [
+                        { name: 'Комментарий', value: comment.value.trim() || '' }
+                    ]
                 }
+            };
 
-                // ---- 5. Запуск виджета ----
-                widget.start(intentParams)
-                    .then(function(result) {
-                        // onSuccess — виджет закрыт после успешного платежа
-                        console.log('Платёж успешен:', result);
-                        alert('Спасибо! Платёж успешно проведён.');
-                        // можно очистить форму или перенаправить
-                    })
-                    .catch(function(error) {
-                        // onFail — ошибка или закрытие виджета без оплаты
-                        console.warn('Платёж отменён или ошибка:', error);
-                        // Не выводим alert, чтобы не раздражать пользователя
-                    });
+            // ---- Если чекбокс активен — добавляем рекуррент (подписку) ----
+            if (recurrentCheck.checked) {
+                params.recurrent = {
+                    interval: 'Month',
+                    period: 1,
+                    amount: AMOUNT   // можно ту же сумму
+                };
             }
 
-            // ---- привязываем запуск к кнопке ----
-            payBtn.addEventListener('click', launchWidget);
+            // ---- Запуск виджета ----
+            widget.start(params)
+                .then(function(result) {
+                    console.log('Платёж успешен:', result);
+                    alert('Спасибо! Платёж успешно проведён.');
+                })
+                .catch(function(error) {
+                    console.warn('Платёж отменён или ошибка:', error);
+                    // Не выводим alert, чтобы не раздражать
+                });
+        }
 
-            // ---- поддержка Enter в полях формы (не отправлять форму) ----
-            form.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                }
-            });
+        payBtn.addEventListener('click', launchWidget);
 
-        })();
-    </script>
+        // Отключаем отправку формы по Enter
+        form.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') e.preventDefault();
+        });
+    })();
+</script>
 
 </body>
 </html>
